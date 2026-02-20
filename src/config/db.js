@@ -1,12 +1,21 @@
 const mongoose = require('mongoose');
 
+let isConnected = false;
+
 const connectDB = async () => {
+    if (isConnected) return;
+
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://isuperhero16_db_user:T4w2oDiCVenwxXf4@advertaising.nlphfhj.mongodb.net/?appName=advertaising');
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+
+        isConnected = conn.connections[0].readyState;
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
+        console.error(`MongoDB Connection Error: ${error.message}`);
+        throw error; // ❌ DO NOT use process.exit
     }
 };
 
